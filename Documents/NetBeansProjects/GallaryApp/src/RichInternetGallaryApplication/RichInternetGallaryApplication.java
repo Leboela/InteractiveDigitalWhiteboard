@@ -16,6 +16,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.animation.RotateTransition;
+import javafx.animation.ScaleTransition;
+import javafx.util.Duration;
+import javafx.scene.transform.Rotate;
+import javafx.scene.layout.VBox;
+import javafx.geometry.Pos;
+
+
 
 /**
  *
@@ -104,6 +112,8 @@ public class RichInternetGallaryApplication extends Application {
         gridPane.setPadding(new Insets(10));
         gridPane.setHgap(10);
         gridPane.setVgap(10);
+        gridPane.setStyle("-fx-padding: 15px; -fx-hgap: 15px; -fx-vgap: 15px;");
+
         ScrollPane scrollPane=new ScrollPane(gridPane);
         scrollPane.getStyleClass().add("scrollPane"); 
         scrollPane.setFitToWidth(true);
@@ -125,6 +135,38 @@ public class RichInternetGallaryApplication extends Application {
                     thumbnailView.setPreserveRatio(true); 
                     // Apply CSS class 
                     thumbnailView.getStyleClass().add("thumbnail");
+                    // Apply default style
+
+                   
+            // Flip Animation
+            RotateTransition flipAnimation = new RotateTransition(Duration.millis(500), thumbnailView);
+            flipAnimation.setAxis(Rotate.Y_AXIS);
+            flipAnimation.setFromAngle(0);
+            flipAnimation.setToAngle(180);
+            flipAnimation.setCycleCount(1);
+            flipAnimation.setAutoReverse(true);
+
+            // Zoom In Animation
+            ScaleTransition zoomIn = new ScaleTransition(Duration.millis(200), thumbnailView);
+            zoomIn.setToX(1.2); // 120% size
+            zoomIn.setToY(1.2);
+
+            // Zoom Out Animation
+            ScaleTransition zoomOut = new ScaleTransition(Duration.millis(200), thumbnailView);
+            zoomOut.setToX(1); // Back to normal
+            zoomOut.setToY(1);
+
+            // Add hover effects
+            thumbnailView.setOnMouseEntered(e -> {
+                flipAnimation.stop();
+                flipAnimation.setFromAngle(0);
+                flipAnimation.setToAngle(180);
+                flipAnimation.play();
+                zoomIn.play();
+            });
+
+            thumbnailView.setOnMouseExited(e -> zoomOut.play());
+
                     
                     
 
@@ -138,7 +180,7 @@ public class RichInternetGallaryApplication extends Application {
             }
         }
 
-        Scene scene = new Scene(scrollPane, 400, 400);
+        Scene scene = new Scene(scrollPane, 800, 600);
         scene.getStylesheets().add(getClass().getResource("MyCSS.css").toExternalForm());
         URL cssURL = getClass().getResource("MyCSS.css");
         System.out.println("CSS File URL: " + cssURL);
@@ -170,7 +212,40 @@ public class RichInternetGallaryApplication extends Application {
             fullImageView = new ImageView();
             fullImageView.setPreserveRatio(true);
             fullImageView.setFitWidth(600);
-            fullImageView.setFitHeight(600);
+            fullImageView.setFitHeight(500);
+            
+         
+
+
+        // Load Images
+        updateImage();
+        
+         // Thumbnail row
+        HBox thumbnailRow = new HBox(5);
+        thumbnailRow.setPadding(new Insets(10));
+        
+        int maxThumbnails = 30;
+        
+
+        for (int i = 0;i < Math.min(imageUrls.length, maxThumbnails); i++) {
+            final int thumbIndex = i; // **Make index final**
+            Image thumbImage = new Image(imageUrls[i]);
+            ImageView thumbView = new ImageView(thumbImage);
+            thumbView.setFitWidth(25);
+            thumbView.setFitHeight(25);
+            thumbView.setPreserveRatio(true);
+            
+            // Change main image on click
+            thumbView.setOnMouseClicked(e -> {
+                currentIndex = thumbIndex;
+                updateImage();
+            });
+
+            thumbnailRow.getChildren().add(thumbView);
+        }
+        
+
+            
 
             // Navigation Buttons
             Button prevButton = new Button("◀ Previous"); 
@@ -200,17 +275,33 @@ public class RichInternetGallaryApplication extends Application {
 
 
 
-            HBox buttonBox = new HBox(10, prevButton, nextButton, closeButton);
-            buttonBox.setPadding(new Insets(10));
+            HBox buttonBox = new HBox(20, prevButton, nextButton, closeButton);
+            buttonBox.setPadding(new Insets(15));
+           // buttonBox.setStyle("-fx-alignment: center; -fx-spacing: 15px; -fx-padding: 10px;");
+            buttonBox.setAlignment(Pos.CENTER);
             
-
-            BorderPane root = new BorderPane();
-            root.setCenter(fullImageView);
-            root.setBottom(buttonBox);
+             
             
+            
+                // Bottom Container with Thumbnails and Buttons
+                VBox bottomContainer = new VBox(15, thumbnailRow, buttonBox);
+                bottomContainer.setPadding(new Insets(20));
+                bottomContainer.setAlignment(Pos.CENTER); // Center align contents
+                bottomContainer.setStyle("-fx-background-color: #f4f4f4; -fx-padding: 15px;");
+                
+                BorderPane root = new BorderPane();
+                root.setCenter(fullImageView);
+                root.setBottom(bottomContainer);
 
-            Scene scene = new Scene(root, 650, 650);
-            imageStage.setScene(scene);
+                
+
+
+           
+
+        Scene scene = new Scene(root, 800, 700);
+        imageStage.setScene(scene);
+
+           
         }
 
         updateImage();
