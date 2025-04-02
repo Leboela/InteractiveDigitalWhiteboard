@@ -1,0 +1,46 @@
+.root {
+    -fx-background-color: #f4f4f4;
+}
+
+/* buttons style */
+.button {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 12px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    
+    
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+/*HBox style */
+.hbox {
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+    -fx-background-color: #333;
+}
+
+/*ColorPicker style */
+.color-picker {
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+}
+
+/* Sliders style */
+.slider {
+    -fx-padding: 5px;
+}
+
+/* Canvas style */
+.canvas {
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-background-color: white;
+}
+
